@@ -19,8 +19,6 @@ function setup() {
 
 function draw() {
   drawGradientBackground();
-
-  // texto / poema
   drawTextOverlay();
 
   // lluvia
@@ -60,9 +58,9 @@ function drawTextOverlay() {
   noStroke();
   fill(255, 245, 255, 230);
   textSize(18);
-  text("soft rain, falling petals", 20, 30);
+  text("Rain & Flowers by Johanna", 20, 30);
   textSize(13);
-  text("move the mouse: petals drift towards you", 20, 52);
+  text("Move the mouse: petals drift towards you", 20, 52);
 }
 
 // ---------- CLASE PÉTALO ----------
@@ -74,7 +72,11 @@ class Petal {
     this.size = random(12, 24);
     this.angle = random(360);
     this.rotationSpeed = random(-1, 1);
-    this.baseColor = color(random(240, 255), random(140, 190), random(190, 240));
+    this.baseColor = color(
+      random(240, 255),
+      random(140, 190),
+      random(190, 240)
+    );
     this.glow = random(100, 180);
   }
 
@@ -86,7 +88,7 @@ class Petal {
     // ligera atracción al mouse si está cerca
     let d = dist(this.pos.x, this.pos.y, mouseX, mouseY);
     if (d < 200) {
-      let lerpAmt = 0.003; // más grande = se acercan más rápido
+      let lerpAmt = 0.003;
       this.pos.x = lerp(this.pos.x, mouseX, lerpAmt);
       this.pos.y = lerp(this.pos.y, mouseY, lerpAmt * 0.5);
     }
