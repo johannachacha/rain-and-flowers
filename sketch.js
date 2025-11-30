@@ -19,7 +19,6 @@ function setup() {
 
 function draw() {
   drawGradientBackground();
-  drawTextOverlay();
 
   // lluvia
   for (let d of drops) {
@@ -34,109 +33,72 @@ function draw() {
   }
 }
 
-// ---------- FONDO DEGRADADO ----------
-function drawGradientBackground() {
-  for (let y = 0; y < height; y++) {
-    let t = map(y, 0, height, 0, 1);
-    let c = lerpColor(
-      color(255, 220, 235), // arriba
-      color(160, 130, 210), // abajo
-      t
-    );
-    stroke(c);
-    line(0, y, width, y);
-  }
-
-  // brillo suave
-  noStroke();
-  fill(255, 255, 255, 40);
-  ellipse(width * 0.2, height * 0.2, 260, 260);
-}
-
-// ---------- TEXTO / POEMA ----------
-function drawTextOverlay() {
-  noStroke();
-  fill(255, 245, 255, 230);
-  textSize(18);
-  text("Rain & Flowers by Johanna", 20, 30);
-  textSize(13);
-  text("Move the mouse: petals drift towards you", 20, 52);
-}
-
-// ---------- CLASE PÉTALO ----------
-class Petal {
+// 🌧 clase lluvia
+class Drop {
   constructor(x, y) {
-    this.pos = createVector(x, y);
-    this.speed = random(0.7, 1.8);
-    this.drift = random(-0.6, 0.6);
-    this.size = random(12, 24);
-    this.angle = random(360);
-    this.rotationSpeed = random(-1, 1);
-    this.baseColor = color(
-      random(240, 255),
-      random(140, 190),
-      random(190, 240)
-    );
-    this.glow = random(100, 180);
+    this.x = x;
+    this.y = y;
+    this.speed = random(4, 10);
+    this.length = random(10, 20);
   }
 
   update() {
-    this.pos.y += this.speed;
-    this.pos.x += this.drift + sin(frameCount * 0.5 + this.angle) * 0.2;
+    this.y += this.speed;
+    if (this.y > height) {
+      this.y = random(-100, 0);
+      this.x = random(width);
+    }
+  }
+
+  show() {
+    stroke(200, 200, 255, 180);
+    strokeWeight(2);
+    line(this.x, this.y, this.x, this.y + this.length);
+  }
+}
+
+// 🌸 clase pétalos
+class Petal {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = random(12, 24);
+    this.speed = random(1, 3);
+    this.angle = random(360);
+    this.rotationSpeed = random(-1, 1);
+  }
+
+  update() {
+    this.y += this.speed;
     this.angle += this.rotationSpeed;
 
-    // ligera atracción al mouse si está cerca
-    let d = dist(this.pos.x, this.pos.y, mouseX, mouseY);
-    if (d < 200) {
-      let lerpAmt = 0.003;
-      this.pos.x = lerp(this.pos.x, mouseX, lerpAmt);
-      this.pos.y = lerp(this.pos.y, mouseY, lerpAmt * 0.5);
-    }
-
-    if (this.pos.y > height + 20) {
-      this.pos.y = random(-120, -10);
-      this.pos.x = random(width);
+    if (this.y > height) {
+      this.y = random(-100, 0);
+      this.x = random(width);
     }
   }
 
   show() {
     push();
-    translate(this.pos.x, this.pos.y);
+    translate(this.x, this.y);
     rotate(this.angle);
-
-    // halo brillante
     noStroke();
-    fill(255, 200, 230, this.glow * 0.4);
-    ellipse(0, 0, this.size * 1.8, this.size * 2.4);
-
-    // pétalo
-    fill(this.baseColor);
-    ellipse(0, 0, this.size * 0.9, this.size * 1.8);
+    fill(random(240, 255), random(150, 180), random(160, 200), 220);
+    ellipse(0, 0, this.size * 1.3, this.size);
     pop();
   }
 }
 
-// ---------- CLASE GOTA ----------
-class Drop {
-  constructor(x, y) {
-    this.pos = createVector(x, y);
-    this.len = random(8, 16);
-    this.speed = random(4, 9);
-  }
+// 🌅 fondo degradado
+function drawGradientBackground() {
+  let c1 = color(255, 200, 230);
+  let c2 = color(180, 140, 220);
 
-  update() {
-    this.pos.y += this.speed;
-
-    if (this.pos.y > height) {
-      this.pos.y = random(-200, 0);
-      this.pos.x = random(width);
-    }
-  }
-
-  show() {
-    stroke(200, 220, 255, 180);
-    strokeWeight(2);
-    line(this.pos.x, this.pos.y, this.pos.x, this.pos.y + this.len);
+  for (let y = 0; y < height; y++) {
+    let inter = map(y, 0, height, 0, 1);
+    let col = lerpColor(c1, c2, inter);
+    stroke(col);
+    line(0, y, width, y);
   }
 }
 
